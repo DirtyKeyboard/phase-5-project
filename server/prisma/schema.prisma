@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    Int            @id @default(autoincrement())
+  username              String         @unique
+  email                 String         @unique
+  password              String /// @encrypted
+  role                  Role           @default(BASIC)
+  plans                 Entry[]
+  plan_request_recieved EntryRequest[] @relation("Reciever")
+  plan_request_sent     EntryRequest[] @relation("Sent")
+  friends               User[]         @relation("friends")
+  friendsRelation       User[]         @relation("friends")
+}
+
+model Entry {
+  id     Int      @id @default(autoincrement())
+  name   String
+  time   DateTime
+  owner  User     @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model EntryRequest {
+  id               Int         @id @default(autoincrement())
+  name             String
+  time             DateTime
+  status           RequestType @default(WAITING)
+  sent_by          User        @relation("Sent", fields: [sent_user_id], references: [id])
+  sent_user_id     Int
+  reciever         User        @relation("Reciever", fields: [reciever_user_id], references: [id])
+  reciever_user_id Int
+}
+
+model DirectMessage {
+  id      Int    @id @default(autoincrement())
+  message String /// @encrypted
+}
+
+enum Role {
+  BASIC
+  MANAGER
+}
+
+enum RequestType {
+  WAITING
+  DECLINED
+  ACCEPTED
+}
