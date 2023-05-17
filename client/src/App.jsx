@@ -1,30 +1,18 @@
-import {Typography as T} from '@mui/material'
-import {Button} from '@mui/material'
-import DateTimePicker from './DateTimePicker'
 import React from 'react'
-import {UserContext} from './context/UserContext'
-import axios from 'axios'
+import {Route, Routes} from 'react-router-dom'
+import Login from './Login'
+import Register from './Register'
+import Dashboard from './Dashboard'
+import Home from './Home'
 
 function App() {
-  const {user, setUser} = React.useContext(UserContext)
   return (
-      <div className="flex flex-col h-screen justify-center items-center gap-4">
-        
-        <div className="flex gap-2">
-          {user ? 
-          <>
-            <T variant="h1">User: {user.username}</T>
-            <T variant='h1'>Logged in</T>
-          </>
-          :
-          <>
-            <Button variant='outlined'>Login</Button>
-            <Button variant='outlined'>Create Account</Button>
-          </>
-          }
-          
-        </div>
-      </div>
+    <Routes>
+      <Route exact path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   )
 }
 

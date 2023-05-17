@@ -7,9 +7,12 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import UserProvider from './context/UserContext'
+import {BrowserRouter} from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <UserProvider>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </UserProvider>
 )
