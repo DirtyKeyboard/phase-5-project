@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background-color: #fcfcfc;
+    font-family: 'Titillium Web', sans-serif;
+}
+
+@layer components {
+    .btn-default {
+        @apply p-4 rounded-2xl bg-white hover:bg-slate-200 font-sans hover:translate-y-1 transition-all duration-200
+    }
+
+}
