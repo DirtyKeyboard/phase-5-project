@@ -25,18 +25,18 @@ const Login = () => {
         }
 
     return (
-        <div className="bg-blue1 h-screen p-12 flex justify-center items-center">
+        <div className="bg-iris h-screen p-12 flex justify-center items-center">
             <ToastContainer />
-            <div className="h-[stretch] w-[50vw] bg-white flex flex-col items-center gap-8 p-8">
+            <div className="h-[stretch] w-[50vw] bg-smoke flex flex-col items-center gap-8 p-8">
                 <h1 className="text-6xl">Login</h1>
                 <form className="flex flex-col gap-10 items-center m-12 w-[stretch] h-[stretch]" onSubmit={handleSubmit}>
                     <label className="text-4xl">Email</label>
-                    <input onChange={handleChange} value={form.email} name="email" className="bg-gray-100 w-[stretch] h-7" type='text' />
+                    <input onChange={handleChange} value={form.email} name="email" className="bg-[#e4e4e4] w-[stretch] h-7" type='text' />
                     <label className="text-4xl">Password</label>
-                    <input onChange={handleChange} value={form.password} name="password" className="bg-gray-100 w-[stretch] h-7" type='password' />
+                    <input onChange={handleChange} value={form.password} name="password" className="bg-[#e4e4e4] w-[stretch] h-7" type='password' />
                     <div className="flex gap-4">
-                        <button type="submit" className="btn-default bg-blue2 text-white font-bold hover:bg-blue4">Submit</button>
-                        <button onClick={() => {nav('/')}} className="btn-default bg-blue2 text-white font-bold hover:bg-blue4">Go Back</button>
+                        <button type="submit" className="btn-default bg-irislight text-white font-bold hover:bg-baby">Submit</button>
+                        <button onClick={() => {nav('/')}} className="btn-default bg-irislight text-white font-bold hover:bg-baby">Go Back</button>
                     </div>
                 </form>
             </div>
