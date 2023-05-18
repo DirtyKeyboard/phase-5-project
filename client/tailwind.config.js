@@ -6,8 +6,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        iris: "#4951DD",
-        irislight: "#4956DD",
+        iris: "#4956DD",
         baby: "#3C86DA",
         babylight: "#4A8FDF",
         teal: "#9DD3C5",

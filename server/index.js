@@ -14,7 +14,14 @@ prisma.$use(fieldEncryptionMiddleware());
 */
 
 app.get('/ping', (req, res) => {
-    res.status(200).send({ message: "pong", user: req.cookies.user})
+    res.status(200).send({ message: "pong"})
+})
+
+app.get('/check', (req, res) => {
+    if (req.cookies.user)
+        res.status(200).send({user: req.cookies.user})
+    else
+        res.status(401).send({message: "Not logged in."})
 })
 
 app.post('/login', async (req, res) => {

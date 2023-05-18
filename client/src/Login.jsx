@@ -35,8 +35,8 @@ const Login = () => {
                     <label className="text-4xl">Password</label>
                     <input onChange={handleChange} value={form.password} name="password" className="bg-[#e4e4e4] w-[stretch] h-7" type='password' />
                     <div className="flex gap-4">
-                        <button type="submit" className="btn-default bg-irislight text-white font-bold hover:bg-baby">Submit</button>
-                        <button onClick={() => {nav('/')}} className="btn-default bg-irislight text-white font-bold hover:bg-baby">Go Back</button>
+                        <button type="submit" className="btn-default bg-iris text-white font-bold hover:bg-baby">Submit</button>
+                        <button onClick={() => {nav('/')}} className="btn-default bg-iris text-white font-bold hover:bg-baby">Go Back</button>
                     </div>
                 </form>
             </div>
