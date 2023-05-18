@@ -21,6 +21,8 @@ model User {
   plan_request_sent     EntryRequest[] @relation("Sent")
   friends               User[]         @relation("friends")
   friendsRelation       User[]         @relation("friends")
+  profilePicture        String?
+  timeZone              String?
 }
 
 model Entry {

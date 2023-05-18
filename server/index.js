@@ -64,6 +64,27 @@ app.post('/register', async (req, res) => {
     }
 })
 
+app.patch('/update_user', async (req, res) => {
+    try {
+        for (key in req.body) {
+            const user = await prisma.user.update({
+                where: {
+                    email: req.cookies.user.email
+                },
+                data: {
+                    [key]: req.body[key]
+                }
+            })
+            res.cookie('user', user)
+        }
+        res.status(200).send({message: "OK"})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+    
+})
+
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port " + process.env.PORT)

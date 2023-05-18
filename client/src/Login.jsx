@@ -31,9 +31,9 @@ const Login = () => {
                 <h1 className="text-6xl">Login</h1>
                 <form className="flex flex-col gap-10 items-center m-12 w-[stretch] h-[stretch]" onSubmit={handleSubmit}>
                     <label className="text-4xl">Email</label>
-                    <input onChange={handleChange} value={form.email} name="email" className="bg-[#e4e4e4] w-[stretch] h-7" type='text' />
+                    <input onChange={handleChange} value={form.email} name="email" className="bg-input w-[stretch] h-7" type='text' />
                     <label className="text-4xl">Password</label>
-                    <input onChange={handleChange} value={form.password} name="password" className="bg-[#e4e4e4] w-[stretch] h-7" type='password' />
+                    <input onChange={handleChange} value={form.password} name="password" className="bg-input w-[stretch] h-7" type='password' />
                     <div className="flex gap-4">
                         <button type="submit" className="btn-default bg-iris text-smoke font-bold hover:bg-baby">Submit</button>
                         <button onClick={() => {nav('/')}} className="btn-default bg-iris text-smoke font-bold hover:bg-baby">Go Back</button>
