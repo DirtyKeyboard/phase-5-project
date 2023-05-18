@@ -24,7 +24,6 @@ const Dashboard = () => {
             <NavBar />
             <div>
                 <h1>Dashboard for {user.username}</h1>
-                <button className="btn-default" onClick={async() => {await axios.get('/api/logout'); nav('/')}}>Logout</button>
             </div>
         </>
     )
