@@ -11,18 +11,29 @@ datasource db {
 }
 
 model User {
-  id                    Int            @id @default(autoincrement())
-  username              String         @unique
-  email                 String         @unique
+  id                    Int             @id @default(autoincrement())
+  username              String          @unique
+  email                 String          @unique
   password              String /// @encrypted
-  role                  Role           @default(BASIC)
+  role                  Role            @default(BASIC)
   plans                 Entry[]
-  plan_request_recieved EntryRequest[] @relation("Reciever")
-  plan_request_sent     EntryRequest[] @relation("Sent")
-  friends               User[]         @relation("friends")
-  friendsRelation       User[]         @relation("friends")
-  profilePicture        String?        @default("")
-  timeZone              String?        @default("America/Chicago")
+  plan_request_recieved EntryRequest[]  @relation("Reciever")
+  plan_request_sent     EntryRequest[]  @relation("Sent")
+  friends               User[]          @relation("friends")
+  friendsRelation       User[]          @relation("friends")
+  profilePicture        String?         @default("")
+  timeZone              String?         @default("America/Chicago")
+  friendRequestSent     FriendRequest[] @relation("FriendRequestSent")
+  friendRequestRecieved FriendRequest[] @relation("FriendRequestRecieved")
+}
+
+model FriendRequest {
+  id      Int         @id @default(autoincrement())
+  from    User        @relation("FriendRequestSent", fields: [from_id], references: [id])
+  from_id Int
+  to      User        @relation("FriendRequestRecieved", fields: [to_id], references: [id])
+  to_id   Int
+  status  RequestType @default(WAITING)
 }
 
 model Entry {

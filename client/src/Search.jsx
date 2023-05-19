@@ -38,7 +38,7 @@ const Search = () => {
                 <input type="text" value={search} placeholder='Search...' onChange={handleChange} className="bg-input w-96 border rounded-full border-teal" />
                 <div className="flex flex-col gap-4 w-[50vw] items-center">
                     {loading ? <div className="w-16 h-16 border border-x-iris border-y-smoke rounded-full animate-spin" /> : null}
-                    {results.map(el => <UserCard user={el}/>)}
+                    {results.map(el => <UserCard key={el.id} user={el}/>)}
                 </div>
             </div>
         </>

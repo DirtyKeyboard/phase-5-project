@@ -106,7 +106,162 @@ app.get('/user/:username', async (req, res) => {
 })
 
 app.get('/friends', async (req, res) => {
-    res.status(200).send("test")
+    try {
+        const user = await prisma.user.findUnique({where: {username: req.cookies.user.username}, include: {friends: true}})
+        res.status(200).send({friends: user.friends})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/outgoing_friend_requests', async(req, res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {
+            username: req.cookies.user.username
+        },
+        include: {
+            friendRequestSent: {
+                where: {
+                    status: "WAITING"
+                }
+            }
+        }})
+        res.status(200).send({sent: user.friendRequestSent})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/incoming_friend_requests', async(req,res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {
+            username: req.cookies.user.username
+        },
+        include: {
+            friendRequestRecieved: {
+                where: {
+                    status: "WAITING"
+                }
+            }
+        }})
+        res.status(200).send({incoming: user.friendRequestRecieved})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.post('/send_friend_request', async(req, res) => {
+    try {
+        const fromUser = await prisma.user.findUnique({where: {username: req.cookies.user.username}})
+        const toUser = await prisma.user.findUnique({ where: { username: req.body.username } })
+        const request = await prisma.friendRequest.create({
+            data: {
+                from_id: fromUser.id,
+                to_id: toUser.id
+            },
+            include: {
+                from: true,
+                to: true
+            }
+        })
+        res.status(201).send({ request: request })
+    }
+    catch (err) {
+        res.status(401).send({error: err.message})
+    }
+})
+
+app.post('/force_add', async(req, res) => {
+    try {
+        const friend = await prisma.user.findUnique({where: {username: req.body.username}})
+        const user = await prisma.user.update({
+            where: {
+                username: req.cookies.user.username
+            },
+            data: {
+                friends: {
+                    connect: {
+                        id: friend.id
+                    }
+                }
+            }
+        })
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.post('/accept_request/:id', async(req, res) => {
+    try {
+        const requestId = parseInt(req.params.id)
+        const liveRequest = await prisma.friendRequest.update(
+            {
+                where: {id: requestId
+            },
+            data:
+            {
+                status: "ACCEPTED"
+            }})
+        const user = await prisma.user.update({
+            where: {
+                username: req.cookies.user.username
+            },
+            data: {
+                friends: {
+                    connect: {
+                        id: liveRequest.from_id
+                    }
+                }
+            },
+            include: {
+                friends: true
+            }
+        })
+        const friend = await prisma.user.update({
+            where: {
+                id: liveRequest.from_id
+            },
+            data: {
+                friends: {
+                    connect: {
+                        id: liveRequest.to_id
+                    }
+                }
+            },
+            include: {
+                friends: true
+            }
+        })
+        res.status(201).send({request: liveRequest, user: user})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.post('/remove_friend', async(req, res) => {
+    try {
+        const friend = await prisma.user.findUnique({where: {username: req.body.username}})
+        const user = await prisma.user.update({
+            where: {
+                username: req.cookies.user.username
+            },
+            data: {
+                friends: {
+                    disconnect: {
+                        id: friend.id
+                    }
+                }
+            }
+        })
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
 })
 
 app.listen(process.env.PORT, () => {

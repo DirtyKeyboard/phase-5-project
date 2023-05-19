@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import settings from './assets/settings.png'
 import log from './assets/log.svg'
+import bell from './assets/BELL_F.png'
 
 const NavBar = () => {
     const [username, setUsername] = React.useState(null)
@@ -31,7 +32,9 @@ const NavBar = () => {
             <NavLink to="/friends" className="nav-link">Friends</NavLink>
             <NavLink to="/" className="nav-link">X</NavLink>
             <h1 className="ml-auto text-2xl p-2 text-smoke">{username}</h1>
-            <img src={picture ? picture : user} className="w-14 hover:cursor-pointer" onClick={() => setShowModal(!modal)} />
+            <img src={bell} className="w-10 hover:cursor-pointer"/>
+            {/* Notification Blips */}
+            <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={() => setShowModal(!modal)} />
         </nav>
         <div className='fixed p-2 right-0'>
             <div className="flex flex-col justify-center gap-4">
