@@ -34,8 +34,8 @@ const Search = () => {
         <>
             <NavBar />
             <div className="flex flex-col items-center gap-8 justify-center h- p-10">
-                <h1 className='text-5xl'>Find Your Friends!</h1>
-                <input type="text" value={search} placeholder='Search...' onChange={handleChange} className="bg-input w-96 border rounded-full border-teal" />
+                <h1 className='text-5xl'>Search Users</h1>
+                <input type="text" value={search} placeholder='Search...' onChange={handleChange} className="bg-input w-96 h-8 p-2 border rounded-full border-teal" />
                 <div className="flex flex-col gap-4 w-[50vw] items-center">
                     {loading ? <div className="w-16 h-16 border border-x-iris border-y-smoke rounded-full animate-spin" /> : null}
                     {results.map(el => <UserCard key={el.id} user={el}/>)}

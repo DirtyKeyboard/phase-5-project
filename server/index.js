@@ -143,6 +143,31 @@ app.get('/incoming_friend_requests', async(req,res) => {
             friendRequestRecieved: {
                 where: {
                     status: "WAITING"
+                },
+                include: {
+                    from: true
+                }
+            }
+        }})
+        res.status(200).send({incoming: user.friendRequestRecieved})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/incoming_friend_requests_from/:username', async(req,res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {
+            username: req.cookies.user.username
+        },
+        include: {
+            friendRequestRecieved: {
+                where: {
+                    status: "WAITING",
+                    from:{
+                        username: req.params.username
+                    }
                 }
             }
         }})
@@ -245,7 +270,7 @@ app.post('/accept_request/:id', async(req, res) => {
 
 app.post('/remove_friend', async(req, res) => {
     try {
-        const friend = await prisma.user.findUnique({where: {username: req.body.username}})
+        const friend = await prisma.user.update({where: {username: req.body.username}, data:{friends:{disconnect:{id: req.cookies.user.id}}}})
         const user = await prisma.user.update({
             where: {
                 username: req.cookies.user.username

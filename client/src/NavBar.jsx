@@ -11,18 +11,28 @@ const NavBar = () => {
     const [username, setUsername] = React.useState(null)
     const [picture, setPicture] = React.useState(null)
     const [modal, setShowModalInternal] = React.useState(false)
+    const [notiWindow, setShowNotisInternal] = React.useState(false)
+    const [notis, setNotis] = React.useState([])
     useEffect(() => {
         async function fetchData() {
             const r = await axios.get('/api/check')
+            const req = await axios.get('/api/incoming_friend_requests')
             setPicture(r.data.user.profilePicture)
             setUsername(r.data.user.username)
+            setNotis(req.data.incoming)
+            console.log(req.data.incoming)
         }
         fetchData()
     },[])
     const nav = useNavigate()
-    function setShowModal(val) {
-        setShowModalInternal(val)
+    function showModal() {
+        setShowModalInternal(true)
         setTimeout(() => {setShowModalInternal(false)}, 5000)
+    }
+
+    function showNotis() {
+        setShowNotisInternal(true)
+        setTimeout(() => {setShowNotisInternal(false)}, 5000)
     }
     return (
         <>
@@ -32,9 +42,9 @@ const NavBar = () => {
             <NavLink to="/friends" className="nav-link">Friends</NavLink>
             <NavLink to="/" className="nav-link">X</NavLink>
             <h1 className="ml-auto text-2xl p-2 text-smoke">{username}</h1>
-            <img src={bell} className="w-10 hover:cursor-pointer"/>
+            <img src={bell} className="w-10 hover:cursor-pointer" onClick={showNotis}/>
             {/* Notification Blips */}
-            <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={() => setShowModal(!modal)} />
+            <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={showModal} />
         </nav>
         <div className='fixed p-2 right-0'>
             <div className="flex flex-col justify-center gap-4">
@@ -44,6 +54,17 @@ const NavBar = () => {
                     nav('/')
                 }}/>
             </div>
+        </div>
+        <div className=" fixed p-2 right-[4rem]">
+                <div className={`${notiWindow ? 'translate-x-0 opacity-100 bg-slate-200' : 'opacity-0'} flex flex-col gap-2 -translate-x-32 transition-all ease-in-out duration-300`}>
+                    {notis.length > 0 ? 
+                    <>
+                    {notis.map(el => <h1 key={el.id} className="hover:bg-slate-300 hover:cursor-pointer" onClick={() => {nav(`/users/${el.from.username}`); window.location.reload()}}>Incoming Friend Request : {el.from.username}</h1>)}
+                    </>
+                    :
+                    <h1>No new notifications.</h1>
+                    }
+                </div>  
         </div>
         </>
     )

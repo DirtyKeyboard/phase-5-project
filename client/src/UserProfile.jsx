@@ -2,6 +2,7 @@ import React from 'react'
 import NavBar from './NavBar'
 import {useParams} from 'react-router-dom'
 import axios from 'axios'
+import defaultPic from './assets/user.png'
 
 const UserProfile = () => {
     const {username} = useParams()
@@ -14,9 +15,9 @@ const UserProfile = () => {
             const r = await axios.get(`/api/user/${username}`)
             const r2 = await axios.get('/api/check')
             const r3 = await axios.get('/api/friends')
-            console.log(r3.data)
-            const recieved = await axios.get('/api/incoming_friend_requests')
-
+            const recieved = await axios.get(`/api/incoming_friend_requests_from/${username}`)
+            if (r.data.user.username === r2.data.user.username)
+                console.log('USER IS VIEWING THEIR OWN PROFILE')
             if (JSON.stringify(r3.data.friends).includes(JSON.stringify(r.data.user)))
                 {
                     setButtonState({text: 'Remove Friend', show: true, behavior: "unadd"})
@@ -39,6 +40,7 @@ const UserProfile = () => {
                     }
                     else {
                         if (recieved.data.incoming[0] !== undefined) {
+                            console.log(recieved.data.incoming[0])
                             setButtonState({text: "Accept Friend Request", show: true, behavior: "acceptRequest", requestId: recieved.data.incoming[0].id})
                         }
                         else {
@@ -71,24 +73,32 @@ const UserProfile = () => {
         else {
             console.error("INVALID BTN BEHAVIOR " + buttonState.behavior) //behavior
         }
-
     }  
+
+    async function handleDeclineClick() {
+
+    }
     return (
         <>
             <NavBar />
             <div className="flex justify-start p-10 flex-col items-center gap-12 my-10 bg-darksmoke mx-80 h-[84vh]">
-                <img src={user.profilePicture} className="h-56" />
+                <img src={user.profilePicture ? user.profilePicture : defaultPic} className="h-56" />
                 <h1 className="text-5xl">{username}</h1>
                 <div className="flex gap-4">
                     {buttonState.show ? 
-
+                    <>
                         <button disabled={buttonState.disable} className="btn-default" onClick={handleClick}>{buttonState.text}</button>
+                        {
+                            buttonState.behavior === 'acceptRequest' ? 
+                            <button className="btn-default" onClick={handleDeclineClick}>Decline Friend Request</button>
+                            :
+                            null
+                        }
+                    </>
 
                     :
                     null
                     }
-                    
-                    
                     {/* <> DEBUGGING BUTTONS */}
                         {/* <button className="btn-default bg-green-200" onClick={async() => {
                             const r = await axios.post('/api/send_friend_request', {username})
