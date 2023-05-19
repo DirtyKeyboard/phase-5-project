@@ -9,7 +9,7 @@ import log from './assets/log.svg'
 const NavBar = () => {
     const [username, setUsername] = React.useState(null)
     const [picture, setPicture] = React.useState(null)
-    const [modal, setShowModal] = React.useState(false)
+    const [modal, setShowModalInternal] = React.useState(false)
     useEffect(() => {
         async function fetchData() {
             const r = await axios.get('/api/check')
@@ -19,12 +19,16 @@ const NavBar = () => {
         fetchData()
     },[])
     const nav = useNavigate()
+    function setShowModal(val) {
+        setShowModalInternal(val)
+        setTimeout(() => {setShowModalInternal(false)}, 5000)
+    }
     return (
         <>
         <nav className="flex items-center gap-4 bg-iris h-[4.4rem] p-2">
             <NavLink to="/dashboard" className="nav-link">Dashboard </NavLink>
             <NavLink to="/search" className="nav-link">Search</NavLink>
-            <NavLink to="/" className="nav-link">X</NavLink>
+            <NavLink to="/friends" className="nav-link">Friends</NavLink>
             <NavLink to="/" className="nav-link">X</NavLink>
             <h1 className="ml-auto text-2xl p-2 text-smoke">{username}</h1>
             <img src={picture ? picture : user} className="w-14 hover:cursor-pointer" onClick={() => setShowModal(!modal)} />

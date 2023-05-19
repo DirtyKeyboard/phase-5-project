@@ -85,6 +85,29 @@ app.patch('/update_user', async (req, res) => {
     
 })
 
+app.post('/search', async (req, res) => { //returns the first 10 found, page 0 is the first page, next page gets the next 10.
+    try {
+        const users = await prisma.user.findMany({where: {username: {contains: req.body.username, mode: 'insensitive'}}, take: 10, skip: (req.body.page*10)})
+        res.status(200).send({users: users})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/user/:username', async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {username: req.params.username}})
+        res.status(200).send({user: user})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/friends', async (req, res) => {
+    res.status(200).send("test")
+})
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port " + process.env.PORT)

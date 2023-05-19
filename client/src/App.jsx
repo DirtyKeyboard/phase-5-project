@@ -6,6 +6,8 @@ import Dashboard from './Dashboard'
 import Home from './Home'
 import EditAccount from './EditAccount'
 import Search from './Search'
+import UserProfile from './UserProfile'
+import Friends from './Friends'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/edit_account" element={<EditAccount/>} />
       <Route path="/search" element={<Search />} />
+      <Route path="/users/:username" element={<UserProfile />} />
+      <Route path="/friends" element={<Friends />} />
     </Routes>
   )
 }

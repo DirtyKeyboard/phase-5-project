@@ -11,6 +11,7 @@ export default {
         babylight: "#4A8FDF",
         teal: "#9DD3C5",
         smoke: "#F1EEEE",
+        darksmoke: "#DBDBDB",
         input: "#E4E4E4",
       },
     },
