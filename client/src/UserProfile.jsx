@@ -8,7 +8,7 @@ const UserProfile = () => {
     const {username} = useParams()
     const [user, setUser] = React.useState({})
     const [cur, setCur] = React.useState({})
-    const [buttonState, setButtonState] = React.useState({text: "", disable: false, show: false, behavior: ""})
+    const [buttonState, setButtonState] = React.useState({})
 
     React.useEffect(() => {
         const getU = async() => {
@@ -20,7 +20,7 @@ const UserProfile = () => {
                 console.log('USER IS VIEWING THEIR OWN PROFILE')
             if (JSON.stringify(r3.data.friends).includes(JSON.stringify(r.data.user)))
                 {
-                    setButtonState({text: 'Remove Friend', show: true, behavior: "unadd"})
+                    setButtonState({...buttonState, text: 'Remove Friend', show: true, behavior: "unadd"})
                 }
             else
                 {
@@ -36,15 +36,15 @@ const UserProfile = () => {
                                 requestId = outgoing.data.sent.indexOf(el)
                         })
                         const status = outgoing.data.sent[requestId].status
-                        setButtonState({text: "Pending...", disable: true, show: true, behavior: "n"})
+                        setButtonState({...buttonState, text: "Pending...", disable: true, show: true, behavior: "n"})
                     }
                     else {
                         if (recieved.data.incoming[0] !== undefined) {
                             console.log(recieved.data.incoming[0])
-                            setButtonState({text: "Accept Friend Request", show: true, behavior: "acceptRequest", requestId: recieved.data.incoming[0].id})
+                            setButtonState({...buttonState, text: "Accept Friend Request", show: true, behavior: "acceptRequest", requestId: recieved.data.incoming[0].id})
                         }
                         else {
-                            setButtonState({text: 'Send Friend Request', show: true, behavior: "sendRequest"})
+                            setButtonState({...buttonState, text: 'Send Friend Request', show: true, behavior: "sendRequest"})
                         }
                     }
                 }
@@ -59,16 +59,12 @@ const UserProfile = () => {
         console.log(buttonState) //behavior: unadd, n, sendRequest
         if (buttonState.behavior === "unadd") {
             const r = await axios.post('/api/remove_friend', {username})
-            setButtonState({text: 'Send Friend Request', show: true, behavior: "sendRequest"})
         }
         else if (buttonState.behavior === "sendRequest") {
             const r = await axios.post('/api/send_friend_request', {username})
-            setButtonState({text: "Pending...", disable: true, show: true, behavior: "n"})
         }
         else if (buttonState.behavior === "acceptRequest") {
-            console.log(buttonState)
             const r = await axios.post(`/api/accept_request/${buttonState.requestId}`)
-            console.log(r.data)
         }
         else {
             console.error("INVALID BTN BEHAVIOR " + buttonState.behavior) //behavior
@@ -76,7 +72,7 @@ const UserProfile = () => {
     }  
 
     async function handleDeclineClick() {
-
+        const r = await axios.post(`/api/decline_request/${buttonState.requestId}`)
     }
     return (
         <>
@@ -87,10 +83,10 @@ const UserProfile = () => {
                 <div className="flex gap-4">
                     {buttonState.show ? 
                     <>
-                        <button disabled={buttonState.disable} className="btn-default" onClick={handleClick}>{buttonState.text}</button>
+                        <button disabled={buttonState.disable} className="btn-default" onClick={() => {handleClick(); window.location.reload()}}>{buttonState.text}</button>
                         {
                             buttonState.behavior === 'acceptRequest' ? 
-                            <button className="btn-default" onClick={handleDeclineClick}>Decline Friend Request</button>
+                            <button className="btn-default" onClick={() => {handleDeclineClick(); window.location.reload()}}>Decline Friend Request</button>
                             :
                             null
                         }

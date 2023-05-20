@@ -220,6 +220,17 @@ app.post('/force_add', async(req, res) => {
     }
 })
 
+app.post('/decline_request/:id', async(req, res) => {
+    try {
+        const request = await prisma.friendRequest.update({where: {id: parseInt(req.params.id)}, data: {status: "DECLINED"}})
+    }
+    catch (err)
+    {
+        res.status(401).send({message: err.message})
+        console.log(err)
+    }
+})
+
 app.post('/accept_request/:id', async(req, res) => {
     try {
         const requestId = parseInt(req.params.id)

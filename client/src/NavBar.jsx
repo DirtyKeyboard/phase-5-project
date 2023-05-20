@@ -13,6 +13,7 @@ const NavBar = () => {
     const [modal, setShowModalInternal] = React.useState(false)
     const [notiWindow, setShowNotisInternal] = React.useState(false)
     const [notis, setNotis] = React.useState([])
+    const [blips, setBlips] = React.useState(0)
     useEffect(() => {
         async function fetchData() {
             const r = await axios.get('/api/check')
@@ -20,7 +21,7 @@ const NavBar = () => {
             setPicture(r.data.user.profilePicture)
             setUsername(r.data.user.username)
             setNotis(req.data.incoming)
-            console.log(req.data.incoming)
+            setBlips(req.data.incoming.length)
         }
         fetchData()
     },[])
@@ -43,7 +44,10 @@ const NavBar = () => {
             <NavLink to="/" className="nav-link">X</NavLink>
             <h1 className="ml-auto text-2xl p-2 text-smoke">{username}</h1>
             <img src={bell} className="w-10 hover:cursor-pointer" onClick={showNotis}/>
-            {/* Notification Blips */}
+            {blips > 0 ? 
+            <div className={` ${blips > 100 ? 'text-xs' : null} flex justify-center items-center fixed w-5 h-5 right-[5rem] top-[2rem] bg-red-600 rounded-full text-white hover:cursor-pointer`}
+            onClick={showNotis}>{blips}</div>
+            : null}
             <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={showModal} />
         </nav>
         <div className='fixed p-2 right-0'>
