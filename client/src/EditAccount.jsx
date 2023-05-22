@@ -8,13 +8,13 @@ import axios from 'axios'
 
 const EditAccount = () => { //timeZone user.timeZoneValue
     const nav = useNavigate()
-    const [form, setForm] = useState({timeZone: '', profilePicture: "", role: "BASIC"})
+    const [form, setForm] = useState({timeZone: '', profilePicture: "", role: "BASIC", tzOffset: 0})
     useEffect(() => {
         async function getUser() {
             try {
                 const r = await axios.get('api/check')
                 console.log(r.data.user)
-                setForm({timeZone: r.data.user.timeZone, profilePicture: r.data.user.profilePicture, role: r.data.user.role})
+                setForm({timeZone: r.data.user.timeZone, profilePicture: r.data.user.profilePicture, role: r.data.user.role, tzOffset: r.data.user.tzOffset})
                 console.log(form)
             } 
             catch(err) {
@@ -26,7 +26,6 @@ const EditAccount = () => { //timeZone user.timeZoneValue
     
     const handleSubmit = async(e) => {
         e.preventDefault()
-        console.log(form)
         await axios.patch('/api/update_user', form)
         nav('/dashboard')
     }
@@ -44,7 +43,9 @@ const EditAccount = () => { //timeZone user.timeZoneValue
                 <form className="flex flex-col gap-8 text-center" onSubmit={handleSubmit}>
                     <h1 className="text-6xl mb-12">Account Settings</h1>
                     <label>Select Timezone</label>
-                    <TimezoneSelect value={form.timeZone} onChange={(e) => setForm({...form, timeZone: e.value})} />
+                    <TimezoneSelect value={form.timeZone} onChange={(e) => {  
+                        setForm({...form, timeZone: e.value, tzOffset: e.offset})  
+                        }} />
                     <label>Profile Picture URL</label>
                     <input type="text" value={form.profilePicture} className='w-[stretch] h-7' name="profilePicture" onChange={(e) => {setForm({...form, profilePicture: e.target.value})}}/>
                     <div>

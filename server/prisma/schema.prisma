@@ -23,6 +23,7 @@ model User {
   friendsRelation       User[]          @relation("friends")
   profilePicture        String?         @default("")
   timeZone              String?         @default("America/Chicago")
+  tzOffset              Int             @default(-5)
   friendRequestSent     FriendRequest[] @relation("FriendRequestSent")
   friendRequestRecieved FriendRequest[] @relation("FriendRequestRecieved")
 }

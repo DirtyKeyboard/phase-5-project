@@ -5,16 +5,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker';
 import dayjs from 'dayjs'
-import { useState } from 'react'
 
-const DateTimePicker = () => {
-    const [date, setDate] = useState(null);
+const DateTimePicker = ({date, setDate}) => {
+    // const [date, setDate] = useState(null);
+    const today = new Date()
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
                 <div className="flex flex-col gap-8 justify-center">
-                    <DatePicker label="Date" value={date} onChange={(e) => { setDate(e) }} />
-                    <StaticTimePicker onAccept={() => alert('hi')} orientation="landscape" value={date} onChange={(e) => { setDate(e); console.log(date) }} />
+                    <DatePicker minDate={dayjs(today)} sx={{bgcolor: '#F1EEEE'}} label="Date" value={date} onChange={(e) => { setDate(e) }} />
+                    <StaticTimePicker minutesStep={5} sx={{bgcolor: '#F1EEEE'}} orientation="landscape" value={date} onChange={(e) => { setDate(e) }} />
                 </div>
             </DemoContainer>
         </LocalizationProvider>

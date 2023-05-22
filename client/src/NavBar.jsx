@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import user from './assets/user.png'
 import { useNavigate } from 'react-router-dom' 
@@ -13,8 +13,8 @@ const NavBar = () => {
     const [modal, setShowModalInternal] = React.useState(false)
     const [notiWindow, setShowNotisInternal] = React.useState(false)
     const [notis, setNotis] = React.useState([])
-    const [blips, setBlips] = React.useState(0)
-    useEffect(() => {
+    const [blips, setBlips] = React.useState()
+    React.useEffect(() => {
         async function fetchData() {
             const r = await axios.get('/api/check')
             const req = await axios.get('/api/incoming_friend_requests')
@@ -41,11 +41,10 @@ const NavBar = () => {
             <NavLink to="/dashboard" className="nav-link">Dashboard </NavLink>
             <NavLink to="/search" className="nav-link">Search</NavLink>
             <NavLink to="/friends" className="nav-link">Friends</NavLink>
-            <NavLink to="/" className="nav-link">X</NavLink>
             <h1 className="ml-auto text-2xl p-2 text-smoke">{username}</h1>
             <img src={bell} className="w-10 hover:cursor-pointer" onClick={showNotis}/>
             {blips > 0 ? 
-            <div className={` ${blips > 100 ? 'text-xs' : null} flex justify-center items-center fixed w-5 h-5 right-[5rem] top-[2rem] bg-red-600 rounded-full text-white hover:cursor-pointer`}
+            <div className={` ${blips >= 100 ? 'text-xs' : null} flex justify-center items-center fixed w-5 h-5 right-[5rem] top-[2rem] bg-red-600 rounded-full text-white hover:cursor-pointer`}
             onClick={showNotis}>{blips}</div>
             : null}
             <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={showModal} />

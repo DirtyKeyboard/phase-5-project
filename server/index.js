@@ -17,9 +17,12 @@ app.get('/ping', (req, res) => {
     res.status(200).send({ message: "pong"})
 })
 
-app.get('/check', (req, res) => {
+app.get('/check', async(req, res) => {
     if (req.cookies.user)
-        res.status(200).send({user: req.cookies.user})
+        {
+            const user = await prisma.user.findUnique({where: {id: req.cookies.user.id}, include: {plans: true}})
+            res.status(200).send({user: user})
+        }
     else
         res.status(401).send({message: "Not logged in."})
 })
@@ -297,6 +300,23 @@ app.post('/remove_friend', async(req, res) => {
     }
     catch (err) {
         res.status(401).send({message: err.message})
+    }
+})
+
+app.post('/create_event', async(req, res) => {
+    try {
+        const d = new Date(req.body.time)
+        d.setHours(d.getHours() - 5) // -5 or + req.cookies.user.tzOffset
+        const newPlan = await prisma.entry.create({data: {
+            name: req.body.name,
+            time: d,
+            userId: req.cookies.user.id
+        }})
+        res.status(200).send({plan: newPlan})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+        console.log(err)
     }
 })
 
