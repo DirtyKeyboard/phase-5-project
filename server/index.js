@@ -320,6 +320,18 @@ app.post('/create_event', async(req, res) => {
     }
 })
 
+app.delete('/delete_event/:id', async(req,res) => {
+    try {
+        const id = parseInt(req.params.id)
+        const ev = await prisma.entry.delete({where: {id: id}})
+        res.status(200).send({message: 'deleted!', event: ev})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+        console.log(err)
+    }
+})
+
 app.listen(process.env.PORT, () => {
     console.log("Listening on port " + process.env.PORT)
 })
