@@ -18,7 +18,7 @@ const EventCard = ({el, toast, ops, setOps}) => {
         handleClose()
         try {
             const r = await axios.delete(`/api/delete_event/${ops}`)
-            toast.success('Event Deleted!', {position: toast.POSITION.BOTTOM_RIGHT})
+            window.location.reload()
         }
         catch (err) {
             toast.error('Event could not be deleted, please try again.', {position: toast.POSITION.BOTTOM_RIGHT})

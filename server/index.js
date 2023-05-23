@@ -332,6 +332,24 @@ app.delete('/delete_event/:id', async(req,res) => {
     }
 })
 
+app.post('/create_entry_request', async (req, res) => {
+    try {
+        const d = new Date(req.body.time)
+        d.setHours(d.getHours() - 5)
+        const entryRequest = await prisma.entryRequest.create({data: {
+            name: req.body.name,
+            time: d,
+            reciever_user_id: req.body.recieverId,
+            sent_user_id: req.cookies.user.id
+        }})
+        res.status(200).send({request: entryRequest})
+    }
+    catch (err) {
+        console.log(err.message)
+        res.status(401).send({message: err.message})
+    }
+})
+
 app.listen(process.env.PORT, () => {
     console.log("Listening on port " + process.env.PORT)
 })

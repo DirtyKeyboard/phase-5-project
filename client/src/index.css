@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background-color: #F1EEEE;
     font-family: 'Titillium Web', sans-serif;
