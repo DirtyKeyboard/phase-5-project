@@ -6,11 +6,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker';
 import dayjs from 'dayjs'
 
-const DateTimePicker = ({date, setDate}) => {
-    // const [date, setDate] = useState(null);
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+const DateTimePicker = ({date, setDate, tz}) => { 
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    dayjs.tz.setDefault(tz);
     const today = new Date()
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateLibInstance={dayjs.tz} dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
                 <div className="flex flex-col gap-8 justify-center">
                     <DatePicker minDate={dayjs(today)} sx={{bgcolor: '#F1EEEE'}} label="Date" value={date} onChange={(e) => { setDate(e) }} />

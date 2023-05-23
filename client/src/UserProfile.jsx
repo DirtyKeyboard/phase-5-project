@@ -14,7 +14,7 @@ const UserProfile = () => {
     const [cur, setCur] = React.useState({})
     const [planner, setPlanner] = React.useState(false)
     const [buttonState, setButtonState] = React.useState({})
-    const [date, setDate] = React.useState('')
+    const [date, setDate] = React.useState(null)
     const [name, setName] = React.useState('')
 
     React.useEffect(() => {
@@ -99,24 +99,20 @@ const UserProfile = () => {
             toast.error("You cannot schedule an event for this day and hour, please schedule events at least 1 hour ahead of the current date and time.", {position: toast.POSITION.BOTTOM_RIGHT})
         else
         {
-            //SUBMIT
-            // name: req.body.name,
-            // time: req.body.time,
-            // reciever_user_id: req.body.recieverId,
-            // sent_user_id: req.cookies.user.id
-            //app.post /create_entry_request
+            //if confirm time, do all 
+            //
             try {
                 const r = await axios.post('/api/create_entry_request', {name: name, time: date, recieverId: user.id})
                 console.log(r)
                 setPlanner(false)
-                setDate('')
+                setDate(null)
                 setName('')
                 toast.success("Plan request successfully sent!", {position: toast.POSITION.BOTTOM_RIGHT})
             }
             catch (err) {
                 toast.error(err.message, {position: toast.POSITION.BOTTOM_RIGHT})
             }
-            
+            //
         }
     }
     return (
@@ -126,6 +122,11 @@ const UserProfile = () => {
             <div className={`flex justify-start p-10 flex-col items-center gap-12 my-10 bg-darksmoke mx-80 ${planner ? null : 'h-[84vh]'}`}>
                 <img src={user.profilePicture ? user.profilePicture : defaultPic} className="h-56" />
                 <h1 className="text-5xl">{username}</h1>
+                <h1 className="text-3xl">Timezone: (GMT{user.tzOffset}) {user.timeZone}</h1>
+                { user.tzOffset === cur.tzOffset ? 
+                    null :
+                    <h1 className='text-xl'>Timezone Difference: {user.tzOffset - cur.tzOffset} hour(s).</h1>
+                }
                 <div className="flex gap-4 flex-col">
                     {buttonState.show ? 
                     <>
@@ -138,7 +139,9 @@ const UserProfile = () => {
                             null
                         }
                         {
-                            buttonState.behavior === 'unadd' ? <a href='#form'><button className='btn-default' onClick={() => {setPlanner(!planner)}}>Plan with Friend</button></a> : null
+                            buttonState.behavior === 'unadd' ? <a href='#form'><button className='btn-default' onClick={() => {
+                                    setPlanner(!planner)
+                            }}>Plan with Friend</button></a> : null
                             
                         }
                         </div>
@@ -155,7 +158,7 @@ const UserProfile = () => {
                                 <DateTimePicker date={date} setDate={setDate} />
                                 <button type="submit" className='btn-default bg-iris hover:bg-baby text-white'>Confirm Event</button>
                             </form>
-                        : null}
+                : null}
             </div>
         </>
     )

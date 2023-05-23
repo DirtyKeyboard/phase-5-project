@@ -48,10 +48,10 @@ const EditAccount = () => { //timeZone user.timeZoneValue
                         }} />
                     <label>Profile Picture URL</label>
                     <input type="text" value={form.profilePicture} className='w-[stretch] h-7' name="profilePicture" onChange={(e) => {setForm({...form, profilePicture: e.target.value})}}/>
-                    <div>
+                    {/* <div>
                         <label>Manager?</label>
                         <Switch checked={form.role === 'MANAGER' ? true : false} onChange={switchClick}/>
-                    </div>
+                    </div> */}
                     <button type="submit" className="btn-default bg-white">Submit</button>
                     <button className="btn-default bg-white" onClick={() => nav('/dashboard')}>Back To Dashboard</button>
                 </form>

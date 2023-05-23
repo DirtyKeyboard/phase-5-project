@@ -5,8 +5,7 @@ import NavBar from './NavBar'
 import DateTimePicker from './DateTimePicker'
 import { ToastContainer, toast } from 'react-toastify';
 import DayCard from './DayCard'
-import moment from 'moment'
-
+import moment from 'moment-timezone'
 
 const Dashboard = () => {
     const [user, setUser] = React.useState({})
@@ -22,7 +21,7 @@ const Dashboard = () => {
                 setUser(r.data.user)
             }
             catch (e) {
-                nav('/')
+                console.log(e)
             }
         }
         fetchData()
@@ -43,7 +42,7 @@ const Dashboard = () => {
             toast.error("You cannot schedule an event for this day and hour, please schedule events at least 1 hour ahead of the current date and time.", {position: toast.POSITION.BOTTOM_RIGHT})
         else
         {
-            const r = await axios.post("/api/create_event", {name: name, time: date}) //setback date by 5 hrs
+            const r = await axios.post("/api/create_event", {name: name, time: date})
             const newUser = await axios.get('/api/check')
             setDate(null)
             setName('')
@@ -95,23 +94,15 @@ const Dashboard = () => {
     let convertedFromUser = ''
     if (user.plans) {
         user.plans.forEach(el => {
-        convertedFromUser = el.time
-        const year = convertedFromUser.substring(0, 4) //remove trailing 0
-        let month = convertedFromUser.substring(5,7)
-        let day = convertedFromUser.substring(8,convertedFromUser.indexOf('T'))
-        if (month.charAt(0) === '0')
-            month = month.substring(1)
-        if (day.charAt(0) === '0')
-            day = day.substring(1)
-        convertedFromUser = `${month}/${day}/${year}`
+        convertedFromUser = moment(el.time).tz(user.timeZone).format('MM/DD/YYYY')
         switch (convertedFromUser) {
-            case dayOne: plansOne.push(el); break;
-            case dayTwo: plansTwo.push(el); break;
-            case dayThree: plansThree.push(el); break;
-            case dayFour: plansFour.push(el); break;
-            case dayFive: plansFive.push(el); break;
-            case daySix: plansSix.push(el); break;
-            case daySeven: plansSeven.push(el); break;
+            case moment(dayOne).format('MM/DD/YYYY'): plansOne.push(el); break;
+            case moment(dayTwo).format('MM/DD/YYYY'): plansTwo.push(el); break;
+            case moment(dayThree).format('MM/DD/YYYY'): plansThree.push(el); break;
+            case moment(dayFour).format('MM/DD/YYYY'): plansFour.push(el); break;
+            case moment(dayFive).format('MM/DD/YYYY'): plansFive.push(el); break;
+            case moment(daySix).format('MM/DD/YYYY'): plansSix.push(el); break;
+            case moment(daySeven).format('MM/DD/YYYY'): plansSeven.push(el); break;
         }
         })
     }
@@ -143,20 +134,20 @@ const Dashboard = () => {
             <form className="flex flex-col text-center items-center gap-10" onSubmit={handleSubmit}>
                 <label>Name for Event</label>
                 <input type='text' className='bg-input w-96 h-8 p-2 border rounded-full border-teal' value={name} onChange={(e) => setName(e.target.value)}/>
-                <DateTimePicker date={date} setDate={setDate} />
+                <DateTimePicker date={date} setDate={setDate} tz={user.timeZone} />
                 <button type="submit" className='btn-default bg-iris hover:bg-baby text-white'>Confirm Event</button>
-                {/* <div className="bg-smoke border border-red-500 w-44 h-12 fixed bottom-[18rem] right-[720px]" name="button-hider"/> */}
             </form>
             :
             <div>
-                    <div className="flex gap-4">
-                        <DayCard toast={toast} date={dayOne} events={plansOne} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={dayTwo} events={plansTwo} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={dayThree} events={plansThree} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={dayFour} events={plansFour} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={dayFive} events={plansFive} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={daySix} events={plansSix} ops={ops} setOps={setOps}/>
-                        <DayCard toast={toast} date={daySeven} events={plansSeven} ops={ops} setOps={setOps}/>
+                    <div className="flex justify-center gap-4 flex-wrap">
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayOne} events={plansOne} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayTwo} events={plansTwo} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayThree} events={plansThree} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFour} events={plansFour} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFive} events={plansFive} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={daySix} events={plansSix} ops={ops} setOps={setOps}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={daySeven} events={plansSeven} ops={ops} setOps={setOps}/>
+                        {/*Add a see more button to see more days*/}
                     </div>
             </div>
             }

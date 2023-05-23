@@ -56,11 +56,6 @@ model EntryRequest {
   reciever_user_id Int
 }
 
-model DirectMessage {
-  id      Int    @id @default(autoincrement())
-  message String /// @encrypted
-}
-
 enum Role {
   BASIC
   MANAGER

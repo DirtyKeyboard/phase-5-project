@@ -3,10 +3,10 @@ import moment from 'moment'
 import { Modal } from '@mui/material'
 import axios from 'axios'
 
-const EventCard = ({el, toast, ops, setOps}) => {
+const EventCard = ({el, toast, ops, setOps, timeZone}) => {
     function convert(input) {
-        return moment(input, 'HH:mm').format('h:mm A');
-    }    
+        return moment(input).tz(timeZone).format('hh:mm A')
+    }
     const [open, setOpen] = React.useState(false)
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -33,7 +33,7 @@ const EventCard = ({el, toast, ops, setOps}) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         >
-            <div className="flex flex-col justify-center items-center h-screen">
+            <div className="flex gap-4 flex-col justify-center items-center h-screen text-center">
                 <h1 className="text-6xl text-white">Are you sure you want to delete this event?</h1>
                 <div className='flex gap-4'>
                     <button className="btn-default w-32" onClick={handleDel}>Yes</button>
@@ -49,7 +49,7 @@ const EventCard = ({el, toast, ops, setOps}) => {
                 setOps(-1)
             }}>
                 <h1>{el.name}</h1>
-                <h1>{convert(el.time.substring(el.time.indexOf('T')+1, el.time.lastIndexOf(':')))}</h1>
+                <h1>{convert(el.time)}</h1>
                 {ops === el.id ?
                 <button className="w-6 h-6 bg-red-500 hover:bg-red-700 transition-all ease-in-out duration-200 text-white rounded-full"
                 onClick={(e) => handleModal(e, el.id)}>X</button> 

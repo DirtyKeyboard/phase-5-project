@@ -305,11 +305,9 @@ app.post('/remove_friend', async(req, res) => {
 
 app.post('/create_event', async(req, res) => {
     try {
-        const d = new Date(req.body.time)
-        d.setHours(d.getHours() - 5) // -5 or + req.cookies.user.tzOffset
         const newPlan = await prisma.entry.create({data: {
             name: req.body.name,
-            time: d,
+            time: req.body.time,
             userId: req.cookies.user.id
         }})
         res.status(200).send({plan: newPlan})
@@ -334,11 +332,9 @@ app.delete('/delete_event/:id', async(req,res) => {
 
 app.post('/create_entry_request', async (req, res) => {
     try {
-        const d = new Date(req.body.time)
-        d.setHours(d.getHours() - 5)
         const entryRequest = await prisma.entryRequest.create({data: {
             name: req.body.name,
-            time: d,
+            time: req.body.time,
             reciever_user_id: req.body.recieverId,
             sent_user_id: req.cookies.user.id
         }})
@@ -346,6 +342,63 @@ app.post('/create_entry_request', async (req, res) => {
     }
     catch (err) {
         console.log(err.message)
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.get('/incoming_entry_request', async(req, res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {id: req.cookies.user.id},
+            include: {
+                plan_request_recieved: {
+                    where: {
+                        status: "WAITING",
+                    },
+                    include: {
+                        sent_by: true
+                    }
+                }
+            }})
+        res.status(200).send({entries: user.plan_request_recieved})
+    }
+    catch (er) {
+        console.log(err.message)
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.patch('/decline_request/:id', async(req, res) => {
+    try {
+        const requestToDecline = await prisma.entryRequest.update({
+            where: {id: parseInt(req.params.id)},
+            data: {status: 'DECLINED'}})
+        res.status(200).send({message: 'Reject successfull'})
+    }
+    catch (err) {
+        res.status(401).send({message: err.message})
+    }
+})
+
+app.patch('/accept_request/:id', async(req, res) => {
+    try {
+        const requestToAccept = await prisma.entryRequest.update({
+            where: {id: parseInt(req.params.id)},
+            data: {status: 'ACCEPTED'}})
+        
+        const myPlan = await prisma.entry.create({data: {
+                name: requestToAccept.name,
+                time: requestToAccept.time,
+                userId: requestToAccept.reciever_user_id
+            }})
+
+        await prisma.entry.create({data: {
+                name: requestToAccept.name,
+                time: requestToAccept.time,
+                userId: requestToAccept.sent_user_id
+            }})
+        res.status(200).send({message: 'Accept successfull', plan: myPlan})
+    }
+    catch (err) {
         res.status(401).send({message: err.message})
     }
 })
