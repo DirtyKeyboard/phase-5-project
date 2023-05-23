@@ -25,7 +25,6 @@ const NavBar = () => {
             setPicture(r.data.user.profilePicture)
             setUser(r.data.user)
             setNotis([...req.data.incoming, ...ent.data.entries])
-            console.log(ent.data.entries)
             setBlips(req.data.incoming.length + ent.data.entries.length)
         }
         fetchData()

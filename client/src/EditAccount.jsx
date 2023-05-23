@@ -13,9 +13,7 @@ const EditAccount = () => { //timeZone user.timeZoneValue
         async function getUser() {
             try {
                 const r = await axios.get('api/check')
-                console.log(r.data.user)
                 setForm({timeZone: r.data.user.timeZone, profilePicture: r.data.user.profilePicture, role: r.data.user.role, tzOffset: r.data.user.tzOffset})
-                console.log(form)
             } 
             catch(err) {
                 nav('/')
