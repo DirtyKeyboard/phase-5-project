@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Modal } from '@mui/material'
 import axios from 'axios'
 
-const EventCard = ({el, toast, ops, setOps, timeZone}) => {
+const EventCard = ({el, toast, ops, setOps, timeZone, allPlans, setAllPlans}) => {
     function convert(input) {
         return moment(input).tz(timeZone).format('hh:mm A')
     }
@@ -18,7 +18,11 @@ const EventCard = ({el, toast, ops, setOps, timeZone}) => {
         handleClose()
         try {
             const r = await axios.delete(`/api/delete_event/${ops}`)
-            window.location.reload()
+            const newPlans = allPlans.filter(item => item.id !== el.id)
+            setAllPlans(newPlans)
+            setOps(null)
+            toast.success("Plan deleted successfully!", {position: toast.POSITION.BOTTOM_RIGHT})
+            handleClose()
         }
         catch (err) {
             toast.error('Event could not be deleted, please try again.', {position: toast.POSITION.BOTTOM_RIGHT})
@@ -42,16 +46,16 @@ const EventCard = ({el, toast, ops, setOps, timeZone}) => {
             </div>
             
         </Modal>
-        <div key={el.id} className="text-slate-600 rounded-full text-lg bg-smoke font-bold w-[stretch] hover:cursor-pointer hover:bg-slate-200 transition-all ease-in-out duration-200" onClick={() => {
+        <div key={el.id} className="text-slate-600 rounded-full flex flex-col justify-center items-center text-lg bg-smoke font-bold w-[stretch] hover:cursor-pointer hover:bg-slate-200 transition-all ease-in-out duration-200" onClick={() => {
             if (ops !== el.id)
                 setOps(el.id)
             else
-                setOps(-1)
+                setOps(null)
             }}>
                 <h1>{el.name}</h1>
                 <h1>{convert(el.time)}</h1>
                 {ops === el.id ?
-                <button className="w-6 h-6 bg-red-500 hover:bg-red-700 transition-all ease-in-out duration-200 text-white rounded-full"
+                <button className="flex justify-center items-center p-4 m-1 hover:scale-95 w-6 h-6 bg-red-500 hover:bg-red-700 transition-all ease-in-out duration-200 text-white rounded-full" 
                 onClick={(e) => handleModal(e, el.id)}>X</button> 
                 : null}
                 

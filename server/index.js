@@ -8,10 +8,6 @@ app.use(express.json())
 app.use(cookieParser())
 const prisma = new PrismaClient();
 prisma.$use(fieldEncryptionMiddleware());
-/*
-    Set cookie: res.cookie(name, val, {maxAge: int}) //maxAge is optional
-    Get cooke: req.cookies.COOKIENAME
-*/
 
 app.get('/ping', (req, res) => {
     res.status(200).send({ message: "pong"})
@@ -31,6 +27,7 @@ app.post('/login', async (req, res) => {
     try {
         const {password, email} = req.body
         const user = await prisma.user.findUnique({where: {email: email}})
+        // console.log(user)
         if (user.password === password) {
             res.cookie('user', user)
             res.status(200).send({message: "Logged in!", user: user})
@@ -100,17 +97,22 @@ app.post('/search', async (req, res) => { //returns the first 10 found, page 0 i
 
 app.get('/user/:username', async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({where: {username: req.params.username}})
+        const user = await prisma.user.findUnique({where: {username: req.params.username}, include: {plans: true, friends: true}})
+        user.friends.forEach(el => delete el.password)
+        delete user.password
         res.status(200).send({user: user})
     }
     catch (err) {
         res.status(401).send({message: err.message})
+        console.log(err)
     }
 })
 
 app.get('/friends', async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({where: {username: req.cookies.user.username}, include: {friends: true}})
+        const user = await prisma.user.findUnique({where: {username: req.cookies.user.username}, include: {plans: true, friends: true}})
+        delete user.password
+        user.friends.forEach(el => delete el.password)
         res.status(200).send({friends: user.friends})
     }
     catch (err) {

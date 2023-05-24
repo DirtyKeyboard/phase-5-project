@@ -6,19 +6,36 @@ import DateTimePicker from './DateTimePicker'
 import { ToastContainer, toast } from 'react-toastify';
 import DayCard from './DayCard'
 import moment from 'moment-timezone'
+import EventListCard from './EventListCard'
+import {v4 as uuid} from 'uuid'
 
 const Dashboard = () => {
     const [user, setUser] = React.useState({})
     const [plan, setPlan] = React.useState(false)
     const [date, setDate] = React.useState(null)
     const [name, setName] = React.useState('')
-    const [ops, setOps] = React.useState(0)
+    const [ops, setOps] = React.useState(null)
+    const [seeMore, setSeeMore] = React.useState(false)
+    const [delb, setDelb] = React.useState(null)
+    const [allPlans, setAllPlans] = React.useState([])
     const nav = useNavigate()
+    function compare(a, b) {
+        if (a.time < b.time) {
+            return -1;
+        }
+        if (a.time > b.time) {
+            return 1;
+        }
+        return 0;
+    }
     React.useEffect(() => {
         const fetchData = async() => {
             try {
                 const r = await axios.get('/api/check')
                 setUser(r.data.user)
+                const alp = r.data.user.plans
+                alp.sort(compare)
+                setAllPlans(alp)
             }
             catch (e) {
                 console.log(e)
@@ -31,7 +48,7 @@ const Dashboard = () => {
         const today = new Date()
         if (!name) {
             toast.error("Please select a name for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
-            return 0;           
+            return 0;
         }
         if (!date)
         {
@@ -43,10 +60,11 @@ const Dashboard = () => {
         else
         {
             const r = await axios.post("/api/create_event", {name: name, time: date})
-            const newUser = await axios.get('/api/check')
             setDate(null)
             setName('')
-            setUser(newUser.data.user)
+            const alp = [...allPlans, r.data.plan]
+            alp.sort(compare)
+            setAllPlans(alp)
             toast.success('Plan successfully added!', {position: toast.POSITION.BOTTOM_RIGHT})
         }
     }  
@@ -90,10 +108,10 @@ const Dashboard = () => {
     const plansFive = []
     const plansSix = []
     const plansSeven = []
-    
+
     let convertedFromUser = ''
-    if (user.plans) {
-        user.plans.forEach(el => {
+    if (allPlans) {
+        allPlans.forEach(el => {
         convertedFromUser = moment(el.time).tz(user.timeZone).format('MM/DD/YYYY')
         switch (convertedFromUser) {
             case moment(dayOne).format('MM/DD/YYYY'): plansOne.push(el); break;
@@ -106,15 +124,7 @@ const Dashboard = () => {
         }
         })
     }
-    function compare(a, b) {
-        if (a.time < b.time) {
-            return -1;
-        }
-        if (a.time > b.time) {
-            return 1;
-        }
-        return 0;
-    }
+
     plansOne.sort(compare)
     plansTwo.sort(compare)
     plansThree.sort(compare)
@@ -122,7 +132,7 @@ const Dashboard = () => {
     plansFive.sort(compare)
     plansSix.sort(compare)
     plansSeven.sort(compare)
-    
+
     return (
         <>
             <ToastContainer />
@@ -140,15 +150,26 @@ const Dashboard = () => {
             :
             <div>
                     <div className="flex justify-center gap-4 flex-wrap">
-                        <DayCard timeZone={user.timeZone} toast={toast} date={dayOne} events={plansOne} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={dayTwo} events={plansTwo} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={dayThree} events={plansThree} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFour} events={plansFour} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFive} events={plansFive} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={daySix} events={plansSix} ops={ops} setOps={setOps}/>
-                        <DayCard timeZone={user.timeZone} toast={toast} date={daySeven} events={plansSeven} ops={ops} setOps={setOps}/>
-                        {/*Add a see more button to see more days*/}
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayOne} events={plansOne} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayTwo} events={plansTwo} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayThree} events={plansThree} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFour} events={plansFour} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={dayFive} events={plansFive} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={daySix} events={plansSix} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
+                        <DayCard timeZone={user.timeZone} toast={toast} date={daySeven} events={plansSeven} ops={ops} setOps={setOps} allPlans={allPlans} setAllPlans={setAllPlans}/>
                     </div>
+                    <a href='#moreView'>
+                    <button className='btn-default text-white bg-iris hover:bg-baby mt-4' onClick={() => {setSeeMore(!seeMore)}}>{seeMore ? 'See Less' : 'See More'}</button>
+                    </a>
+                    {
+                        seeMore ?
+                        <div id='moreView' className='flex gap-2 flex-col p-4 w-3/4 m-auto'>
+                            {allPlans.map(el => <EventListCard key={uuid()} event={el} tz={user.timeZone} delb={delb} setDelb={setDelb} setAllPlans={setAllPlans} allPlans={allPlans}
+                            toast={toast}/>)}
+                        </div>
+                        :
+                        null
+                    }
             </div>
             }
             </div>
