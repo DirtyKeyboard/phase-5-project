@@ -27,11 +27,12 @@ app.post('/login', async (req, res) => {
     try {
         const {password, email} = req.body
         const user = await prisma.user.findUnique({where: {email: email}})
-        // console.log(user)
         if (user.password === password) {
             res.cookie('user', user)
             res.status(200).send({message: "Logged in!", user: user})
         }
+        else
+            res.status(401).send({message: "Invalid email or password"})
     }
     catch (err) {
         res.status(401).send({message: err.message})
@@ -307,10 +308,13 @@ app.post('/remove_friend', async(req, res) => {
 
 app.post('/create_event', async(req, res) => {
     try {
+        console.log(req.body.hours + " " + req.body.minutes)
         const newPlan = await prisma.entry.create({data: {
             name: req.body.name,
             time: req.body.time,
-            userId: req.cookies.user.id
+            userId: req.cookies.user.id,
+            hours: parseInt(req.body.hours),
+            minutes: parseInt(req.body.minutes)
         }})
         res.status(200).send({plan: newPlan})
     }
@@ -338,7 +342,9 @@ app.post('/create_entry_request', async (req, res) => {
             name: req.body.name,
             time: req.body.time,
             reciever_user_id: req.body.recieverId,
-            sent_user_id: req.cookies.user.id
+            sent_user_id: req.cookies.user.id,
+            hours: parseInt(req.body.hours),
+            minutes: parseInt(req.body.minutes)
         }})
         res.status(200).send({request: entryRequest})
     }
@@ -391,13 +397,17 @@ app.patch('/accept_request/:id', async(req, res) => {
         const myPlan = await prisma.entry.create({data: {
                 name: requestToAccept.name,
                 time: requestToAccept.time,
-                userId: requestToAccept.reciever_user_id
+                userId: requestToAccept.reciever_user_id,
+                hours: parseInt(requestToAccept.hours),
+                minutes: parseInt(requestToAccept.minutes)
             }})
 
         await prisma.entry.create({data: {
                 name: requestToAccept.name,
                 time: requestToAccept.time,
-                userId: requestToAccept.sent_user_id
+                userId: requestToAccept.sent_user_id,
+                hours: parseInt(requestToAccept.hours),
+                minutes: parseInt(requestToAccept.minutes)
             }})
         res.status(200).send({message: 'Accept successfull', plan: myPlan})
     }

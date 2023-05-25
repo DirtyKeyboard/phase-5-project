@@ -12,6 +12,7 @@ const UserProfile = () => {
     function convert(input, tz) {
         return moment(input).tz(tz).format('dddd, MM/DD/YYYY, hh:mm A')
     }
+
     const nav = useNavigate()
     const {username} = useParams()
     const [user, setUser] = React.useState({})
@@ -23,6 +24,7 @@ const UserProfile = () => {
     const [buttonState, setButtonState] = React.useState({})
     const [date, setDate] = React.useState(null)
     const [name, setName] = React.useState('')
+    const [length, setLength] = React.useState({hours: '', minutes: '0'})
     function compare(a, b) {
         if (a.time < b.time) {
             return -1;
@@ -110,14 +112,12 @@ const UserProfile = () => {
             toast.error("Please select a date and time for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
         else if ((today.getMonth()+1 + " " + today.getDate() + " " + today.getFullYear()) === (date.$M+1 + " " + date.$D + " " + date.$y) && today.getHours() >= date.$H)
             toast.error("You cannot schedule an event for this day and hour, please schedule events at least 1 hour ahead of the current date and time.", {position: toast.POSITION.BOTTOM_RIGHT})
-        else if (name.length >= 16)
-                toast.error("Please keep the event name to 15 characters or under.", {position: toast.POSITION.BOTTOM_RIGHT})
+        else if (length.hours === '' && length.minutes === '0')
+            toast.error("Please enter the length of time for this event.", {position: toast.POSITION.BOTTOM_RIGHT})
         else
         {
-            //if confirm time, do all 
-            //
             try {
-                const r = await axios.post('/api/create_entry_request', {name: name, time: date, recieverId: user.id})
+                const r = await axios.post('/api/create_entry_request', {name: name, time: date, recieverId: user.id, hours: length.hours, minutes: length.minutes})
                 setPlanner(false)
                 setDate(null)
                 setName('')
@@ -128,6 +128,20 @@ const UserProfile = () => {
             }
             //
         }
+    }
+
+    
+    function makeEndTime(event) {
+        const d = moment(event.time).tz(cur.timeZone)
+        d.add(event.hours, 'hours')
+        d.add(event.minutes, 'minutes')
+        return d.format('h:mm A')
+    }
+    function handleChange(e) {
+        if (e.target.name === 'hours' && e.target.value === '0')
+            setLength({[e.target.name]: e.target.value, minutes: '15'})
+        else
+            setLength({...length, [e.target.name]: e.target.value})
     }
     return (
         <>
@@ -173,14 +187,24 @@ const UserProfile = () => {
                                 <label>Name for Event</label>
                                 <input type='text' className='bg-smoke w-96 h-8 p-2 border rounded-full border-teal' value={name} onChange={(e) => setName(e.target.value)}/>
                                 <DateTimePicker date={date} setDate={setDate} tz={cur.timeZone}/>
-                                <button type="submit" className='btn-default bg-iris hover:bg-baby text-white'>Confirm Event</button>
+                                <label>How long is this event?</label>
+                                <div className='flex gap-4'>
+                                    <input min="0" max="12" type='number' name="hours" value={length.hours} onChange={handleChange} className='bg-input w-32 h-10 p-2 border rounded-full border-teal' placeholder=' Hours...'/>
+                                    <select name="minutes" value={length.minutes} onChange={handleChange} className='bg-input rounded-full h-10 p-2 border w-32 border-teal'>
+                                        <option disabled={length.hours > 0 ? false : true} value={0}>0 minutes</option>
+                                        <option value={15}>15 minutes</option>
+                                        <option value={30}>30 minutes</option>
+                                        <option value={45}>45 minutes</option>
+                                    </select>
+                                    </div>
+                                    <button type="submit" className='btn-default bg-iris hover:bg-baby text-white'>Confirm Event</button>
                             </form>
                 : null}
                 {calendar ? 
                 <div className="flex flex-col gap-3">
                     {plans.map(el => 
                     <>
-                    <h1 className="rounded-full bg-teal p-2 text-white font-bold">{el.name} - {convert(el.time, cur.timeZone)} GMT{cur.tzOffset} </h1>
+                    <h1 className="rounded-full bg-teal p-2 text-white font-bold">{el.name} - {convert(el.time, cur.timeZone)} - {makeEndTime(el)} GMT{cur.tzOffset} </h1>
                     </>
                     )}
                 </div>

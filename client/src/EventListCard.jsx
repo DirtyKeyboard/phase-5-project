@@ -5,11 +5,17 @@ import axios from 'axios'
 
 const EventListCard = ({event, tz, delb, setDelb, setAllPlans, allPlans, toast}) => {
     function convert(input) {
-        return moment(input).tz(tz).format('dddd, MM/DD/YYYY, hh:mm A')
+        return moment(input).tz(tz).format('dddd, MM/DD/YYYY, h:mm A')
     }
     function handleModal(e) {
         e.stopPropagation()
         handleOpen()
+    }
+    function makeEndTime() {
+        const d = moment(event.time).tz(tz)
+        d.add(event.hours, 'hours')
+        d.add(event.minutes, 'minutes')
+        return d.format('h:mm A')
     }
     async function handleDel() {
         const r = await axios.delete(`/api/delete_event/${event.id}`)
@@ -45,7 +51,7 @@ const EventListCard = ({event, tz, delb, setDelb, setAllPlans, allPlans, toast})
                 else
                     setDelb(event.id)
                 }} className='flex bg-teal text-white font-bold h-10 items-center text-2xl rounded-full justify-center hover:bg-slate-300 transition-all hover:cursor-pointer'>
-                <h1>{event.name}, {convert(event.time)}</h1>
+                <h1>{event.name}, {convert(event.time)} - {makeEndTime()}</h1>
                 {delb === event.id ?
                 <button onClick={handleModal} className="ml-20 w-4 h-4 flex justify-center items-center bg-red-500 p-4 rounded-full hover:scale-95 hover:bg-red-700 transition-all ease-in-out duration-200">X</button>
                 : null}

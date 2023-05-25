@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const EventCard = ({el, toast, ops, setOps, timeZone, allPlans, setAllPlans}) => {
     function convert(input) {
-        return moment(input).tz(timeZone).format('hh:mm A')
+        return moment(input).tz(timeZone).format('h:mm A')
     }
     const [open, setOpen] = React.useState(false)
     const handleOpen = () => setOpen(true);
@@ -13,6 +13,12 @@ const EventCard = ({el, toast, ops, setOps, timeZone, allPlans, setAllPlans}) =>
     function handleModal(e, id) {
         e.stopPropagation()
         handleOpen()
+    }
+    function makeEndTime() {
+        const d = moment(el.time).tz(timeZone)
+        d.add(el.hours, 'hours')
+        d.add(el.minutes, 'minutes')
+        return d.format('h:mm A')
     }
     async function handleDel(e) {
         handleClose()
@@ -53,7 +59,7 @@ const EventCard = ({el, toast, ops, setOps, timeZone, allPlans, setAllPlans}) =>
                 setOps(null)
             }}>
                 <h1>{el.name}</h1>
-                <h1>{convert(el.time)}</h1>
+                <h1>{convert(el.time)} - {makeEndTime()} </h1>
                 {ops === el.id ?
                 <button className="flex justify-center items-center p-4 m-1 hover:scale-95 w-6 h-6 bg-red-500 hover:bg-red-700 transition-all ease-in-out duration-200 text-white rounded-full" 
                 onClick={(e) => handleModal(e, el.id)}>X</button> 

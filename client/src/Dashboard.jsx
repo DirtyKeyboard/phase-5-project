@@ -14,6 +14,7 @@ const Dashboard = () => {
     const [plan, setPlan] = React.useState(false)
     const [date, setDate] = React.useState(null)
     const [name, setName] = React.useState('')
+    const [length, setLength] = React.useState({hours: '', minutes: '0'})
     const [ops, setOps] = React.useState(null)
     const [seeMore, setSeeMore] = React.useState(false)
     const [delb, setDelb] = React.useState(null)
@@ -55,9 +56,12 @@ const Dashboard = () => {
         else if (name.length >= 16) {
             toast.error("Please keep the event name to 15 characters or under.", {position: toast.POSITION.BOTTOM_RIGHT})
         }
+        else if (length.hours === '' && length.minutes === '0')
+            toast.error("Please enter the length of time for this event.", {position: toast.POSITION.BOTTOM_RIGHT})
         else
         {
-            const r = await axios.post("/api/create_event", {name: name, time: date})
+            console.log(length)
+            const r = await axios.post("/api/create_event", {name: name, time: date, ...length})
             setDate(null)
             setName('')
             const alp = [...allPlans, r.data.plan]
@@ -130,7 +134,12 @@ const Dashboard = () => {
     plansFive.sort(compare)
     plansSix.sort(compare)
     plansSeven.sort(compare)
-
+    function handleChange(e) {
+        if (e.target.name === 'hours' && e.target.value === '0')
+            setLength({[e.target.name]: e.target.value, minutes: '15'})
+        else
+            setLength({...length, [e.target.name]: e.target.value})
+    }
     return (
         <>
             <ToastContainer />
@@ -143,6 +152,16 @@ const Dashboard = () => {
                 <label>Name for Event</label>
                 <input type='text' className='bg-input w-96 h-8 p-2 border rounded-full border-teal' value={name} onChange={(e) => setName(e.target.value)}/>
                 <DateTimePicker date={date} setDate={setDate} tz={user.timeZone} />
+                <label>How long is this event?</label>
+                <div className='flex gap-4'>
+                    <input min="0" max="12" type='number' name="hours" value={length.hours} onChange={handleChange} className='bg-input w-32 h-10 p-2 border rounded-full border-teal' placeholder=' Hours...'/>
+                    <select name="minutes" value={length.minutes} onChange={handleChange} className='bg-input rounded-full h-10 p-2 border w-32 border-teal'>
+                        <option disabled={length.hours > 0 ? false : true} value={0}>0 minutes</option>
+                        <option value={15}>15 minutes</option>
+                        <option value={30}>30 minutes</option>
+                        <option value={45}>45 minutes</option>
+                    </select>
+                </div>
                 <button type="submit" className='btn-default bg-iris hover:bg-baby text-white'>Confirm Event</button>
             </form>
             :

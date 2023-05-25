@@ -1,6 +1,5 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import user from './assets/user.png'
 import { useNavigate } from 'react-router-dom' 
 import axios from 'axios'
 import settings from './assets/settings.png'
@@ -12,7 +11,7 @@ import moment from 'moment-timezone'
 
 const NavBar = () => {
     const [user, setUser] = React.useState(null)
-    const [picture, setPicture] = React.useState(null)
+    const [picture, setPicture] = React.useState("")
     const [modal, setShowModalInternal] = React.useState(false)
     const [notiWindow, setShowNotisInternal] = React.useState(false)
     const [notis, setNotis] = React.useState([])
@@ -69,6 +68,12 @@ const NavBar = () => {
         }
         handleClose()
     }
+    function makeEndTime(event) {
+        const d = moment(event.time).tz(user?.timeZone)
+        d.add(event.hours, 'hours')
+        d.add(event.minutes, 'minutes')
+        return d.format('h:mm A')
+    }
     return (
         <>
         { user ?
@@ -82,7 +87,7 @@ const NavBar = () => {
                             <h1 className="text-6xl text-white">You've been invited to an event by {clickedEvent.sent_by?.username}!</h1>
                             <h1 className='text-5xl text-white'>Event Name: {clickedEvent.name}</h1>
                             <h1 className='text-4xl text-white'>Date Of Event: {moment(clickedEvent.time).tz(user.timeZone).format('MM/DD/YYYY')}</h1>
-                            <h1 className='text-3xl text-white'>Time Of Event: {moment(clickedEvent.time).tz(user.timeZone).format('h:mm A')}</h1>
+                            <h1 className='text-3xl text-white'>Time Of Event: {moment(clickedEvent.time).tz(user.timeZone).format('h:mm A')} - {makeEndTime(clickedEvent)}</h1>
                             <div className='flex gap-2'>
                                 <button className="btn-default" onClick={handleAccept}>Accept</button>
                                 <button className="btn-default" onClick={() => {handleDecline();}}>Decline</button>
@@ -104,7 +109,7 @@ const NavBar = () => {
             <span className={` ${blips >= 100 ? 'text-xs' : null} flex justify-center items-center absolute w-5 h-5 right-[5rem] top-[2rem] bg-red-600 rounded-full text-white hover:cursor-pointer`}
             onClick={showNotis}>{blips}</span>
             : null}
-            <img src={picture ? picture : user} className="w-14 hover:cursor-pointer p-1" onClick={showModal} />
+            <img src={picture.length > 0 ? picture : '/src/assets/user.png'} className="w-14 hover:cursor-pointer p-1" onClick={showModal} />
         </nav>
         <div className='fixed p-2 right-0'>
             <div className="flex flex-col justify-center gap-4">
