@@ -43,7 +43,6 @@ const NavBar = () => {
     
     const [open, setOpen] = React.useState(false)
     const [clickedEvent, setClickedEvent] = React.useState({})
-    const handleOpen = () => setOpen(true);
     const handleClose = () => { setOpen(false); setClickedEvent({})}
     async function handleAccept() {
         try {
@@ -80,7 +79,7 @@ const NavBar = () => {
                 aria-describedby="modal-modal-description">
                     <div className='flex justify-center items-center m-auto w-screen h-screen'>
                         <div className="text-center flex flex-col gap-4 justify-center items-center w-[70vw]">
-                            <h1 className="text-6xl text-white">You've been invited to an event by {1+1}!</h1>
+                            <h1 className="text-6xl text-white">You've been invited to an event by {clickedEvent.sent_by?.username}!</h1>
                             <h1 className='text-5xl text-white'>Event Name: {clickedEvent.name}</h1>
                             <h1 className='text-4xl text-white'>Date Of Event: {moment(clickedEvent.time).tz(user.timeZone).format('MM/DD/YYYY')}</h1>
                             <h1 className='text-3xl text-white'>Time Of Event: {moment(clickedEvent.time).tz(user.timeZone).format('h:mm A')}</h1>

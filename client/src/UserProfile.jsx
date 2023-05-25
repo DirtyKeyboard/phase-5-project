@@ -56,7 +56,6 @@ const UserProfile = () => {
                     const outgoing = await axios.get('/api/outgoing_friend_requests')
                     if (JSON.stringify(outgoing.data.sent).includes(usr.id))
                     {
-                        console.log('already sent')
                         let requestId;
                         outgoing.data.sent.forEach(el => {
                             if (el.to_id == usr.id)
@@ -67,7 +66,6 @@ const UserProfile = () => {
                     }
                     else {
                         if (recieved.data.incoming[0] !== undefined) {
-                            console.log(recieved.data.incoming[0])
                             setButtonState({...buttonState, text: "Accept Friend Request", show: true, behavior: "acceptRequest", requestId: recieved.data.incoming[0].id})
                         }
                         else if (usr.username === r2.data.user.username) 
@@ -83,8 +81,6 @@ const UserProfile = () => {
         getU()
     }, [])
     const handleClick = async() => {
-
-        console.log(buttonState) //behavior: unadd, n, sendRequest
         if (buttonState.behavior === "unadd") {
             const r = await axios.post('/api/remove_friend', {username})
         }
@@ -108,24 +104,20 @@ const UserProfile = () => {
     async function handleSubmit(e) {
         e.preventDefault()
         const today = new Date()
-        if (!name) {
+        if (!name)
             toast.error("Please select a name for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
-            return 0;           
-        }
-        if (!date)
-        {
+        else if (!date)
             toast.error("Please select a date and time for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
-            return 0;
-        }
-        if ((today.getMonth()+1 + " " + today.getDate() + " " + today.getFullYear()) === (date.$M+1 + " " + date.$D + " " + date.$y) && today.getHours() >= date.$H)
+        else if ((today.getMonth()+1 + " " + today.getDate() + " " + today.getFullYear()) === (date.$M+1 + " " + date.$D + " " + date.$y) && today.getHours() >= date.$H)
             toast.error("You cannot schedule an event for this day and hour, please schedule events at least 1 hour ahead of the current date and time.", {position: toast.POSITION.BOTTOM_RIGHT})
+        else if (name.length >= 16)
+                toast.error("Please keep the event name to 15 characters or under.", {position: toast.POSITION.BOTTOM_RIGHT})
         else
         {
             //if confirm time, do all 
             //
             try {
                 const r = await axios.post('/api/create_entry_request', {name: name, time: date, recieverId: user.id})
-                console.log(r)
                 setPlanner(false)
                 setDate(null)
                 setName('')
@@ -164,7 +156,7 @@ const UserProfile = () => {
                             buttonState.behavior === 'unadd' ? 
                             <>
                             <a href='#form'><button className='btn-default' onClick={() => {setPlanner(!planner)}}>{planner ? 'Hide Planner' : 'Plan with Friend'}</button></a>
-                            <button className="btn-default" onClick={() => {console.log(plans); setCalendar(!calendar)}}>{calendar ? 'Hide':'See'} Friend's Calendar</button>
+                            <button className="btn-default" onClick={() => {setCalendar(!calendar)}}>{calendar ? 'Hide':'See'} Friend's Calendar</button>
                             </>
                             : null
                             

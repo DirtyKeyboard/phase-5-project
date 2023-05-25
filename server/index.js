@@ -361,9 +361,10 @@ app.get('/incoming_entry_request', async(req, res) => {
                     }
                 }
             }})
+        user.plan_request_recieved.forEach(el => delete el.sent_by.password)
         res.status(200).send({entries: user.plan_request_recieved})
     }
-    catch (er) {
+    catch (ere) {
         console.log(err.message)
         res.status(401).send({message: err.message})
     }

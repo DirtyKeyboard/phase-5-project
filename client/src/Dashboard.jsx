@@ -46,17 +46,15 @@ const Dashboard = () => {
     async function handleSubmit(e) {
         e.preventDefault()
         const today = new Date()
-        if (!name) {
+        if (!name)
             toast.error("Please select a name for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
-            return 0;
-        }
-        if (!date)
-        {
+        else if (!date)
             toast.error("Please select a date and time for your event.", {position: toast.POSITION.BOTTOM_RIGHT})
-            return 0;
-        }
-        if ((today.getMonth()+1 + " " + today.getDate() + " " + today.getFullYear()) === (date.$M+1 + " " + date.$D + " " + date.$y) && today.getHours() >= date.$H)
+        else if ((today.getMonth()+1 + " " + today.getDate() + " " + today.getFullYear()) === (date.$M+1 + " " + date.$D + " " + date.$y) && today.getHours() >= date.$H)
             toast.error("You cannot schedule an event for this day and hour, please schedule events at least 1 hour ahead of the current date and time.", {position: toast.POSITION.BOTTOM_RIGHT})
+        else if (name.length >= 16) {
+            toast.error("Please keep the event name to 15 characters or under.", {position: toast.POSITION.BOTTOM_RIGHT})
+        }
         else
         {
             const r = await axios.post("/api/create_event", {name: name, time: date})
@@ -112,15 +110,15 @@ const Dashboard = () => {
     let convertedFromUser = ''
     if (allPlans) {
         allPlans.forEach(el => {
-        convertedFromUser = moment(el.time).tz(user.timeZone).format('MM/DD/YYYY')
+        convertedFromUser = moment(new Date(el.time)).tz(user.timeZone).format('MM/DD/YYYY')
         switch (convertedFromUser) {
-            case moment(dayOne).format('MM/DD/YYYY'): plansOne.push(el); break;
-            case moment(dayTwo).format('MM/DD/YYYY'): plansTwo.push(el); break;
-            case moment(dayThree).format('MM/DD/YYYY'): plansThree.push(el); break;
-            case moment(dayFour).format('MM/DD/YYYY'): plansFour.push(el); break;
-            case moment(dayFive).format('MM/DD/YYYY'): plansFive.push(el); break;
-            case moment(daySix).format('MM/DD/YYYY'): plansSix.push(el); break;
-            case moment(daySeven).format('MM/DD/YYYY'): plansSeven.push(el); break;
+            case moment(new Date(dayOne)).format('MM/DD/YYYY'): plansOne.push(el); break;
+            case moment(new Date(dayTwo)).format('MM/DD/YYYY'): plansTwo.push(el); break;
+            case moment(new Date(dayThree)).format('MM/DD/YYYY'): plansThree.push(el); break;
+            case moment(new Date(dayFour)).format('MM/DD/YYYY'): plansFour.push(el); break;
+            case moment(new Date(dayFive)).format('MM/DD/YYYY'): plansFive.push(el); break;
+            case moment(new Date(daySix)).format('MM/DD/YYYY'): plansSix.push(el); break;
+            case moment(new Date(daySeven)).format('MM/DD/YYYY'): plansSeven.push(el); break;
         }
         })
     }
